@@ -1,0 +1,168 @@
+package emag;
+
+import drac.Card;
+import drac.Deck;
+import reyalp.Player;
+import reyalp.PlayerList;
+
+import java.util.*;
+
+/**
+ * The possible player actions to be taken during the game.
+ */
+abstract class GameActions {
+
+    /**
+     * Allows the user to guess a card that a player's hand contains (excluding another guard).
+     * If the user is correct, the opponent loses the round and must lay down their card.
+     * If the user is incorrect, the opponent is not affected.
+     * @param in
+     *          the input stream
+     * @param opponent
+     *          the targeted player
+     */
+    void useGuard(Scanner in, Player opponent) {
+        ArrayList<String> cardNames = new ArrayList<>(Arrays.asList(Card.CARD_NAMES));
+
+        System.out.print("Which card would you like to guess: ");
+        String cardName = in.nextLine();
+
+        while (!cardNames.contains(cardName.toLowerCase()) || cardName.equalsIgnoreCase("guard")) {
+            System.out.println("Invalid card name");
+            System.out.print("Which card would you like to guess: ");
+            cardName = in.nextLine();
+        }
+
+        Card opponentCard = opponent.peekCard(0);
+        if (opponentCard.getName().equalsIgnoreCase(cardName)) {
+            System.out.println("You have guessed correctly!");
+            opponent.loseCard();
+        } else {
+            System.out.println("You have guessed incorrectly");
+        }
+    }
+
+    /**
+     * Allows the user to peek at the card of an opposing player.
+     * @param opponent
+     *          the targeted player
+     */
+    void usePriest(Player opponent) {
+        Card opponentCard = opponent.peekCard(0);
+        System.out.println(opponent.getName() + " shows you a " + opponentCard);
+    }
+
+    /**
+     * Allows the user to compare cards with an opponent.
+     * If the user's card is of higher value, the opposing player loses the round and their card.
+     * If the user's card is of lower value, the user loses the round and their card.
+     * If the two players have the same card, their used pile values are compared in the same manner.
+     * @param user
+     *          the initiator of the comparison
+     * @param opponent
+     *          the targeted player
+     */
+    void useBaron(Player user, Player opponent) {
+        Card userCard = user.peekCard(0);
+        Card opponentCard = opponent.peekCard(0);
+
+        int cardComparison = Integer.compare(userCard.value(), opponentCard.value());
+        if (cardComparison > 0) {
+            System.out.println("You have won the comparison!");
+            opponent.loseCard();
+        } else if (cardComparison < 0) {
+            System.out.println("You have lost the comparison");
+            user.loseCard();
+        } else {
+            System.out.println("You have the same card!");
+            if (opponent.getUsedValue() > user.getUsedValue()) {
+                System.out.println("You have lost the used pile comparison");
+                user.loseCard();
+            } else {
+                System.out.println("You have won the used pile comparison");
+                opponent.loseCard();
+            }
+        }
+    }
+
+    /**
+     * Switches the user's protection for one turn. This protects them from being targeted.
+     * @param user
+     *          the current player
+     */
+    void useHandmaiden(Player user) {
+        System.out.println("You are now protected until your next turn");
+        user.switchProtection();
+    }
+
+    /**
+     * Makes an opposing player lay down their card in their used pile and draw another.
+     * @param opponent
+     *          the targeted player
+     * @param d
+     *          the deck of cards
+     */
+    void usePrince(Player opponent, Deck d) {
+        opponent.loseCard();
+        if (d.hasMoreCards()) {
+            opponent.takeCard(d.dealCard());
+        }
+    }
+
+    /**
+     * Allows the user to switch cards with an opponent.
+     * Swaps the user's hand for the opponent's.
+     * @param user
+     *          the initiator of the swap
+     * @param opponent
+     *          the targeted player
+     */
+    void useKing(Player user, Player opponent) {
+        Card userCard = user.putDownCard(0);
+        Card opponentCard = opponent.putDownCard(0);
+        user.takeCard(opponentCard);
+        opponent.takeCard(userCard);
+    }
+
+    /**
+     * If the princess is played, the user loses the round and must lay down their hand.
+     * @param user
+     *          the current player
+     */
+    void usePrincess(Player user) {
+        user.loseCard();
+    }
+
+    /**
+     * Useful method for obtaining a chosen target from the player list.
+     * @param in
+     *          the input stream
+     * @param playerList
+     *          the list of players
+     * @param user
+     *          the player choosing an opponent
+     * @return the chosen target player
+     */
+    Player getOpponent(Scanner in, PlayerList playerList, Player user) {
+        Player opponent = null;
+        boolean validTarget = false;
+        while (!validTarget) {
+            System.out.print("Who would you like to target: ");
+            String opponentName = in.nextLine();
+            opponent = playerList.getPlayer(opponentName);
+            if (opponent == null) {
+                System.out.println("This player is not in the game");
+            } else if (opponent.isProtected()) {
+                System.out.println("This player is protected by a handmaiden");
+            } else if (opponent.getName().equals(user.getName())) {
+                System.out.println("You cannot target yourself");
+            } else if (!opponent.hasCards()) {
+                System.out.println("This player is out of cards");
+            } else {
+                validTarget = true;
+            }
+        }
+        return opponent;
+    }
+
+}
