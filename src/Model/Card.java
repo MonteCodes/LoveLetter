@@ -1,5 +1,3 @@
-package drac;
-
 /**
  * Enum with all possible cards.
  */
