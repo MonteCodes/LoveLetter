@@ -1,7 +1,7 @@
 # Compiled class file
 *.class
 
-/love-letter/out/*
+out/Production/LoveLetterGame/
 
 # Log file
 *.log
