@@ -1,4 +1,4 @@
-package emag;
+package controller;
 
 import model.Card;
 import model.Deck;
