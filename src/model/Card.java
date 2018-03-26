@@ -1,4 +1,4 @@
-package drac;
+package model;
 
 /**
  * Enum with all possible cards.

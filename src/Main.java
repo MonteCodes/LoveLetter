@@ -1,4 +1,4 @@
-import emag.Game;
+import controller.Game;
 
 import java.util.Scanner;
 

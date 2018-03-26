@@ -1,6 +1,6 @@
-package reyalp;
+package controller;
 
-import drac.Card;
+import model.Card;
 
 import java.util.ArrayList;
 

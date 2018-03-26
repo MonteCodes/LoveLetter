@@ -1,7 +1,6 @@
-package reyalp;
+package controller;
 
-
-import drac.Deck;
+import model.Deck;
 
 import java.util.LinkedList;
 

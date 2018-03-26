@@ -1,9 +1,7 @@
-package emag;
+package controller;
 
-import drac.Card;
-import drac.Deck;
-import reyalp.Player;
-import reyalp.PlayerList;
+import model.Card;
+import model.Deck;
 
 import java.util.*;
 
