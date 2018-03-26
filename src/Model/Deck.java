@@ -1,5 +1,3 @@
-package drac;
-
 import java.util.Collections;
 import java.util.Stack;
 
