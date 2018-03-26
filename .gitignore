@@ -1,7 +1,7 @@
 # Compiled class file
 *.class
 
-/out/*
+/love-letter/out/*
 
 # Log file
 *.log
