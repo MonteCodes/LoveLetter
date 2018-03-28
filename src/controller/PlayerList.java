@@ -55,7 +55,8 @@ public class PlayerList{
      */
     public void reset() {
         for (Player p : players) {
-            p.reset();
+            p.hand().clear();
+            p.used().clear();
         }
     }
 
@@ -65,14 +66,14 @@ public class PlayerList{
     public void printUsedPiles() {
         for (Player p : players) {
             System.out.println("\n" + p.getName());
-            p.printUsed();
+            p.used().print();
         }
     }
 
     /**
-     * Prints the block count of each Player in the list.
+     * Prints each Player in the list.
      */
-    public void printBlockCounts() {
+    public void print() {
         System.out.println();
         for (Player p : players) {
             System.out.println(p);
@@ -88,7 +89,7 @@ public class PlayerList{
     public boolean checkForRoundWinner() {
         int count = 0;
         for (Player p : players) {
-            if (p.hasCards()) {
+            if (p.hand().hasCards()) {
                 count++;
             }
         }
@@ -102,7 +103,7 @@ public class PlayerList{
      */
     public Player getRoundWinner() {
         for (Player p : players) {
-            if (p.hasCards()) {
+            if (p.hand().hasCards()) {
                 return p;
             }
         }
@@ -131,7 +132,7 @@ public class PlayerList{
      */
     public void dealCards(Deck deck) {
         for (Player p : players) {
-            p.takeCard(deck.dealCard());
+            p.hand().add(deck.dealCard());
         }
     }
 
@@ -160,7 +161,7 @@ public class PlayerList{
     public Player compareUsedPiles() {
         Player winner = players.getFirst();
         for (Player p : players) {
-            if (p.getUsedValue() > winner.getUsedValue()) {
+            if (p.used().value() > winner.used().value()) {
                 winner = p;
             }
         }

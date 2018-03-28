@@ -61,20 +61,20 @@ public class Game extends GameActions {
             while (!players.checkForRoundWinner() && deck.hasMoreCards()) {
                 Player turn = players.getCurrentPlayer();
 
-                if (turn.hasCards()) {
+                if (turn.hand().hasCards()) {
                     players.printUsedPiles();
                     System.out.println("\n" + turn.getName() + "'s turn:");
                     if (turn.isProtected()) {
                         turn.switchProtection();
                     }
-                    turn.takeCard(deck.dealCard());
+                    turn.hand().add(deck.dealCard());
 
-                    int royaltyPos = turn.royaltyPos();
+                    int royaltyPos = turn.hand().royaltyPos();
                     if (royaltyPos != -1) {
-                        if (royaltyPos == 0 && turn.peekCard(1).value() == 7) {
-                            playCard(turn.putDownCard(1), turn);
-                        } else if (royaltyPos == 1 && turn.peekCard(0).value() == 7) {
-                            playCard(turn.putDownCard(0), turn);
+                        if (royaltyPos == 0 && turn.hand().peek(1).value() == 7) {
+                            playCard(turn.hand().remove(1), turn);
+                        } else if (royaltyPos == 1 && turn.hand().peek(0).value() == 7) {
+                            playCard(turn.hand().remove(0), turn);
                         } else {
                             playCard(getCard(turn), turn);
                         }
@@ -93,7 +93,7 @@ public class Game extends GameActions {
             }
             winner.addBlock();
             System.out.println(winner.getName() + " has won this round!");
-            players.printBlockCounts();
+            players.print();
         }
         Player gameWinner = players.getGameWinner();
         System.out.println(gameWinner + " has won the game and the heart of the princess!");
@@ -117,7 +117,7 @@ public class Game extends GameActions {
      */
     private void playCard(Card card, Player user) {
         int value = card.value();
-        user.addToUsed(card);
+        user.used().add(card);
         if (value < 4 || value == 5 || value == 6) {
             Player opponent = getOpponent(in, players, user);
             if (value == 1) {
@@ -149,7 +149,7 @@ public class Game extends GameActions {
      * @return the chosen card
      */
     private Card getCard(Player user) {
-        user.printHand();
+        user.hand().print();
         System.out.println();
         System.out.print("Which card would you like to play (0 for first, 1 for second): ");
         String cardPosition = in.nextLine();
@@ -160,7 +160,7 @@ public class Game extends GameActions {
         }
 
         int idx = Integer.parseInt(cardPosition);
-        return user.putDownCard(idx);
+        return user.hand().remove(idx);
     }
 
 

@@ -31,10 +31,10 @@ abstract class GameActions {
             cardName = in.nextLine();
         }
 
-        Card opponentCard = opponent.peekCard(0);
+        Card opponentCard = opponent.hand().peek(0);
         if (opponentCard.getName().equalsIgnoreCase(cardName)) {
             System.out.println("You have guessed correctly!");
-            opponent.loseCard();
+            opponent.lose();
         } else {
             System.out.println("You have guessed incorrectly");
         }
@@ -46,7 +46,7 @@ abstract class GameActions {
      *          the targeted player
      */
     void usePriest(Player opponent) {
-        Card opponentCard = opponent.peekCard(0);
+        Card opponentCard = opponent.hand().peek(0);
         System.out.println(opponent.getName() + " shows you a " + opponentCard);
     }
 
@@ -61,24 +61,24 @@ abstract class GameActions {
      *          the targeted player
      */
     void useBaron(Player user, Player opponent) {
-        Card userCard = user.peekCard(0);
-        Card opponentCard = opponent.peekCard(0);
+        Card userCard = user.hand().peek(0);
+        Card opponentCard = opponent.hand().peek(0);
 
         int cardComparison = Integer.compare(userCard.value(), opponentCard.value());
         if (cardComparison > 0) {
             System.out.println("You have won the comparison!");
-            opponent.loseCard();
+            opponent.lose();
         } else if (cardComparison < 0) {
             System.out.println("You have lost the comparison");
-            user.loseCard();
+            user.lose();
         } else {
             System.out.println("You have the same card!");
-            if (opponent.getUsedValue() > user.getUsedValue()) {
+            if (opponent.used().value() > user.used().value()) {
                 System.out.println("You have lost the used pile comparison");
-                user.loseCard();
+                user.lose();
             } else {
                 System.out.println("You have won the used pile comparison");
-                opponent.loseCard();
+                opponent.lose();
             }
         }
     }
@@ -101,9 +101,9 @@ abstract class GameActions {
      *          the deck of cards
      */
     void usePrince(Player opponent, Deck d) {
-        opponent.loseCard();
+        opponent.lose();
         if (d.hasMoreCards()) {
-            opponent.takeCard(d.dealCard());
+            opponent.hand().add(d.dealCard());
         }
     }
 
@@ -116,10 +116,10 @@ abstract class GameActions {
      *          the targeted player
      */
     void useKing(Player user, Player opponent) {
-        Card userCard = user.putDownCard(0);
-        Card opponentCard = opponent.putDownCard(0);
-        user.takeCard(opponentCard);
-        opponent.takeCard(userCard);
+        Card userCard = user.hand().remove(0);
+        Card opponentCard = opponent.hand().remove(0);
+        user.hand().add(opponentCard);
+        opponent.hand().add(userCard);
     }
 
     /**
@@ -128,7 +128,7 @@ abstract class GameActions {
      *          the current player
      */
     void usePrincess(Player user) {
-        user.loseCard();
+        user.lose();
     }
 
     /**
@@ -154,7 +154,7 @@ abstract class GameActions {
                 System.out.println("This player is protected by a handmaiden");
             } else if (opponent.getName().equals(user.getName())) {
                 System.out.println("You cannot target yourself");
-            } else if (!opponent.hasCards()) {
+            } else if (!opponent.hand().hasCards()) {
                 System.out.println("This player is out of cards");
             } else {
                 validTarget = true;
